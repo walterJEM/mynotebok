@@ -94,6 +94,7 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
           title: new Date().toLocaleDateString(),
           description: '',
           image_url: pathname,
+          image_path: pathname,
           captured_at: new Date().toISOString(),
           tags: [],
         })
