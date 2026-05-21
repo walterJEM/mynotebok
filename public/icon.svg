@@ -1,26 +1,38 @@
-<svg width="180" height="180" viewBox="0 0 180 180" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <style>
-    @media (prefers-color-scheme: light) {
-      .background { fill: black; }
-      .foreground { fill: white; }
-    }
-    @media (prefers-color-scheme: dark) {
-      .background { fill: white; }
-      .foreground { fill: black; }
-    }
-  </style>
-  <g clip-path="url(#clip0_7960_43945)">
-    <rect class="background" width="180" height="180" rx="37" />
-    <g style="transform: scale(95%); transform-origin: center">
-      <path class="foreground"
-        d="M101.141 53H136.632C151.023 53 162.689 64.6662 162.689 79.0573V112.904H148.112V79.0573C148.112 78.7105 148.098 78.3662 148.072 78.0251L112.581 112.898C112.701 112.902 112.821 112.904 112.941 112.904H148.112V126.672H112.941C98.5504 126.672 86.5638 114.891 86.5638 100.5V66.7434H101.141V100.5C101.141 101.15 101.191 101.792 101.289 102.422L137.56 66.7816C137.255 66.7563 136.945 66.7434 136.632 66.7434H101.141V53Z" />
-      <path class="foreground"
-        d="M65.2926 124.136L14 66.7372H34.6355L64.7495 100.436V66.7372H80.1365V118.47C80.1365 126.278 70.4953 129.958 65.2926 124.136Z" />
-    </g>
-  </g>
+<svg width="512" height="512" viewBox="0 0 680 680" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <clipPath id="clip0_7960_43945">
-      <rect width="180" height="180" fill="white" />
-    </clipPath>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a237e"/>
+      <stop offset="100%" style="stop-color:#0d47a1"/>
+    </linearGradient>
+    <linearGradient id="bookGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff"/>
+      <stop offset="100%" style="stop-color:#e3f2fd"/>
+    </linearGradient>
+    <linearGradient id="camGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#42a5f5"/>
+      <stop offset="100%" style="stop-color:#1565c0"/>
+    </linearGradient>
   </defs>
+  <rect x="80" y="80" width="520" height="520" rx="120" fill="url(#bgGrad)"/>
+  <ellipse cx="340" cy="180" rx="200" ry="80" fill="#ffffff" opacity="0.06"/>
+  <rect x="195" y="205" width="295" height="340" rx="18" fill="url(#bookGrad)"/>
+  <rect x="195" y="205" width="42" height="340" rx="12" fill="#1565c0" opacity="0.9"/>
+  <circle cx="216" cy="275" r="11" fill="#0d47a1"/>
+  <circle cx="216" cy="275" r="6" fill="#0d47a1"/>
+  <circle cx="216" cy="340" r="11" fill="#0d47a1"/>
+  <circle cx="216" cy="340" r="6" fill="#0d47a1"/>
+  <circle cx="216" cy="405" r="11" fill="#0d47a1"/>
+  <circle cx="216" cy="405" r="6" fill="#0d47a1"/>
+  <circle cx="216" cy="470" r="11" fill="#0d47a1"/>
+  <circle cx="216" cy="470" r="6" fill="#0d47a1"/>
+  <line x1="258" y1="295" x2="455" y2="295" stroke="#90caf9" stroke-width="7" stroke-linecap="round" opacity="0.6"/>
+  <line x1="258" y1="335" x2="455" y2="335" stroke="#90caf9" stroke-width="7" stroke-linecap="round" opacity="0.6"/>
+  <line x1="258" y1="375" x2="455" y2="375" stroke="#90caf9" stroke-width="7" stroke-linecap="round" opacity="0.6"/>
+  <line x1="258" y1="415" x2="420" y2="415" stroke="#90caf9" stroke-width="7" stroke-linecap="round" opacity="0.6"/>
+  <circle cx="445" cy="248" r="52" fill="url(#camGrad)"/>
+  <rect x="420" y="233" width="50" height="36" rx="7" fill="none" stroke="#ffffff" stroke-width="5"/>
+  <circle cx="445" cy="251" r="10" fill="none" stroke="#ffffff" stroke-width="4"/>
+  <circle cx="445" cy="251" r="4" fill="#ffffff"/>
+  <rect x="436" y="226" width="14" height="8" rx="3" fill="#ffffff"/>
+  <circle cx="459" cy="237" r="3" fill="#ffffff" opacity="0.7"/>
 </svg>
