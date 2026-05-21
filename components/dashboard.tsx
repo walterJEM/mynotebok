@@ -11,7 +11,7 @@ type ViewMode = 'gallery' | 'list' | 'calendar'
 type SortOption = 'recent' | 'oldest' | 'title'
 
 export default function Dashboard() {
-  const [notes, setNotes] = useState<any[]>([])
+  const [allNotes, setAllNotes] = useState<any[]>([])
   const [viewMode, setViewMode] = useState<ViewMode>('gallery')
   const [loading, setLoading] = useState(true)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
@@ -23,41 +23,23 @@ export default function Dashboard() {
   const supabase = createClient()
 
   useEffect(() => {
-    // Get current user
     const getUser = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
+      const { data: { user } } = await supabase.auth.getUser()
       setUser(user)
     }
     getUser()
-    loadNotes()
-  }, [selectedDate])
+    loadAllNotes()
+  }, [])
 
-  async function loadNotes() {
+  async function loadAllNotes() {
     setLoading(true)
     try {
-      let query = supabase
+      const { data, error } = await supabase
         .from('notes')
         .select('*')
         .order('captured_at', { ascending: false })
-
-      // Filter by date if selected
-      if (selectedDate) {
-        const startOfDay = new Date(selectedDate)
-        startOfDay.setHours(0, 0, 0, 0)
-        const endOfDay = new Date(selectedDate)
-        endOfDay.setHours(23, 59, 59, 999)
-
-        query = query
-          .gte('captured_at', startOfDay.toISOString())
-          .lt('captured_at', endOfDay.toISOString())
-      }
-
-      const { data, error } = await query
-
       if (error) throw error
-      setNotes(data || [])
+      setAllNotes(data || [])
     } catch (error) {
       console.error('[v0] Error loading notes:', error)
     } finally {
@@ -66,133 +48,131 @@ export default function Dashboard() {
   }
 
   async function addNote(note: any) {
-    setNotes([note, ...notes])
-    await loadNotes()
+    await loadAllNotes()
   }
 
-  // Get all unique tags from notes
   const allTags = useMemo(() => {
     const tags = new Set<string>()
-    notes.forEach(note => {
+    allNotes.forEach(note => {
       note.tags?.forEach((tag: string) => tags.add(tag))
     })
     return Array.from(tags).sort()
-  }, [notes])
+  }, [allNotes])
 
-  // Filter and sort notes
   const filteredNotes = useMemo(() => {
-    let result = notes
+    let result = allNotes
 
-    // Search in title and description
+    // Filtrar por fecha seleccionada
+    if (selectedDate) {
+      const dateStr = selectedDate.toISOString().split('T')[0]
+      result = result.filter(note => {
+        const noteDate = new Date(note.captured_at).toISOString().split('T')[0]
+        return noteDate === dateStr
+      })
+    }
+
+    // Filtrar por búsqueda
     if (searchQuery) {
       const query = searchQuery.toLowerCase()
-      result = result.filter(
-        note =>
-          note.title?.toLowerCase().includes(query) ||
-          note.description?.toLowerCase().includes(query)
+      result = result.filter(note =>
+        note.title?.toLowerCase().includes(query) ||
+        note.description?.toLowerCase().includes(query)
       )
     }
 
-    // Filter by tags
+    // Filtrar por tags
     if (selectedTags.length > 0) {
       result = result.filter(note =>
         selectedTags.some(tag => note.tags?.includes(tag))
       )
     }
 
-    // Sort
+    // Ordenar
     switch (sortBy) {
       case 'oldest':
-        result = [...result].reverse()
-        break
-      case 'title':
         result = [...result].sort((a, b) =>
-          a.title.localeCompare(b.title)
+          new Date(a.captured_at).getTime() - new Date(b.captured_at).getTime()
         )
         break
-      case 'recent':
+      case 'title':
+        result = [...result].sort((a, b) => a.title?.localeCompare(b.title))
+        break
       default:
-        // Already sorted by captured_at DESC
         break
     }
 
     return result
-  }, [notes, searchQuery, selectedTags, sortBy])
+  }, [allNotes, selectedDate, searchQuery, selectedTags, sortBy])
 
   return (
     <div className="flex flex-col h-screen bg-white">
-      {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 border-b border-gray-200 md:px-6">
         <h1 className="text-2xl font-semibold text-gray-900">MyNoteBook</h1>
         <CaptureFlow onNoteCaptured={addNote} />
       </header>
 
-      {/* Search & Filters */}
-      <div className="px-4 py-3 border-b border-gray-200 md:px-6 space-y-3">
-        {/* Search Bar */}
-        <div className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50">
-          <Search size={18} className="text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search notes..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="flex-1 bg-transparent text-sm outline-none"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery('')}
-              className="text-gray-400 hover:text-gray-600"
-            >
-              <X size={18} />
-            </button>
-          )}
-        </div>
-
-        {/* Tag Filters */}
-        {allTags.length > 0 && (
-          <div className="flex flex-wrap gap-2">
-            {allTags.map(tag => (
-              <button
-                key={tag}
-                onClick={() => {
-                  if (selectedTags.includes(tag)) {
-                    setSelectedTags(selectedTags.filter(t => t !== tag))
-                  } else {
-                    setSelectedTags([...selectedTags, tag])
-                  }
-                }}
-                className={`text-sm px-3 py-1 rounded-full transition-colors ${
-                  selectedTags.includes(tag)
-                    ? 'bg-gray-900 text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }`}
-              >
-                {tag}
+      {/* Solo mostrar filtros en modo gallery y list */}
+      {viewMode !== 'calendar' && (
+        <div className="px-4 py-3 border-b border-gray-200 md:px-6 space-y-3">
+          <div className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-lg bg-gray-50">
+            <Search size={18} className="text-gray-400" />
+            <input
+              type="text"
+              placeholder="Buscar notas..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 bg-transparent text-sm outline-none"
+            />
+            {searchQuery && (
+              <button onClick={() => setSearchQuery('')} className="text-gray-400 hover:text-gray-600">
+                <X size={18} />
               </button>
-            ))}
+            )}
           </div>
-        )}
 
-        {/* Sort Options */}
-        <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-600">Sort:</span>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortOption)}
-            className="text-sm px-2 py-1 border border-gray-300 rounded bg-white"
-          >
-            <option value="recent">Recent</option>
-            <option value="oldest">Oldest</option>
-            <option value="title">Title A-Z</option>
-          </select>
+          {allTags.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {allTags.map(tag => (
+                <button
+                  key={tag}
+                  onClick={() => {
+                    if (selectedTags.includes(tag)) {
+                      setSelectedTags(selectedTags.filter(t => t !== tag))
+                    } else {
+                      setSelectedTags([...selectedTags, tag])
+                    }
+                  }}
+                  className={`text-sm px-3 py-1 rounded-full transition-colors ${
+                    selectedTags.includes(tag)
+                      ? 'bg-gray-900 text-white'
+                      : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          )}
+
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">Ordenar:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortOption)}
+              className="text-sm px-2 py-1 border border-gray-300 rounded bg-white"
+            >
+              <option value="recent">Reciente</option>
+              <option value="oldest">Antiguo</option>
+              <option value="title">Título A-Z</option>
+            </select>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Main Content */}
       <main className="flex-1 overflow-auto">
         <NoteGallery
           notes={filteredNotes}
+          allNotes={allNotes}
           viewMode={viewMode}
           loading={loading}
           selectedDate={selectedDate}
@@ -200,7 +180,6 @@ export default function Dashboard() {
         />
       </main>
 
-      {/* Bottom Navigation */}
       <Navigation
         viewMode={viewMode}
         onViewModeChange={setViewMode}
