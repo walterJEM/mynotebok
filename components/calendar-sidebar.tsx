@@ -1,7 +1,6 @@
 'use client'
 
-import { DayPicker } from 'react-day-picker'
-import 'react-day-picker/dist/style.css'
+import { useState } from 'react'
 import { X } from 'lucide-react'
 
 interface CalendarSidebarProps {
@@ -18,47 +17,85 @@ export default function CalendarSidebar({
   const noteDates = notes.reduce((acc, note) => {
     const date = new Date(note.captured_at)
     date.setHours(0, 0, 0, 0)
-    const dateStr = date.toISOString()
+    const dateStr = date.toISOString().split('T')[0]
     if (!acc.includes(dateStr)) acc.push(dateStr)
     return acc
   }, [] as string[])
 
+  const today = new Date()
+  const [currentMonth, setCurrentMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1))
+
+  const daysInMonth = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate()
+  const firstDay = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay()
+
+  const monthName = currentMonth.toLocaleString('default', { month: 'long', year: 'numeric' })
+
+  const days = []
+  for (let i = 0; i < firstDay; i++) days.push(null)
+  for (let d = 1; d <= daysInMonth; d++) days.push(d)
+
+  function handleDayClick(day: number) {
+    const clicked = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day)
+    const dateStr = clicked.toISOString().split('T')[0]
+    if (!noteDates.includes(dateStr)) return
+    if (selectedDate?.toDateString() === clicked.toDateString()) {
+      onDateSelected(null)
+    } else {
+      onDateSelected(clicked)
+    }
+  }
+
   return (
-    <div className="w-56 border-r border-gray-200 p-3 flex flex-col">
+    <div className="border-b border-gray-200 bg-gray-50 px-3 py-2">
+      {/* Header */}
       <div className="flex items-center justify-between mb-2">
-        <h3 className="font-semibold text-gray-900 text-sm">Filter by Date</h3>
-        {selectedDate && (
-          <button onClick={() => onDateSelected(null)} className="text-gray-500 hover:text-gray-700">
-            <X size={14} />
-          </button>
-        )}
+        <div className="flex items-center gap-2">
+          <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1, 1))} className="p-1 hover:bg-gray-200 rounded">‹</button>
+          <span className="text-xs font-semibold text-gray-800">{monthName}</span>
+          <button onClick={() => setCurrentMonth(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 1))} className="p-1 hover:bg-gray-200 rounded">›</button>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-gray-500">
+          <span><b className="text-gray-800">{notes.length}</b> notas</span>
+          {selectedDate && (
+            <button onClick={() => onDateSelected(null)} className="flex items-center gap-1 text-red-400 hover:text-red-600">
+              <X size={10} /> limpiar
+            </button>
+          )}
+        </div>
       </div>
 
-      <DayPicker
-        mode="single"
-        selected={selectedDate || undefined}
-        onSelect={(date) => onDateSelected(date || null)}
-        disabled={(date) => {
-          const dateStr = new Date(date).toISOString().split('T')[0]
-          return !noteDates.some(d => d.startsWith(dateStr))
-        }}
-        styles={{
-          root: { margin: 0, fontSize: '0.75rem' },
-          caption: { marginBottom: '4px' },
-          head_cell: { width: '28px', fontSize: '0.65rem' },
-          cell: { width: '28px', height: '28px' },
-          day: { width: '26px', height: '26px', fontSize: '0.7rem' },
-          nav_button: { width: '20px', height: '20px' },
-        }}
-        modifiersClassNames={{
-          selected: 'bg-gray-900 text-white rounded-full',
-          today: 'font-bold text-blue-600',
-        }}
-      />
+      {/* Days of week */}
+      <div className="grid grid-cols-7 mb-1">
+        {['Do','Lu','Ma','Mi','Ju','Vi','Sa'].map(d => (
+          <div key={d} className="text-center text-gray-400" style={{fontSize:'10px'}}>{d}</div>
+        ))}
+      </div>
 
-      <div className="mt-3 pt-3 border-t border-gray-200 text-xs text-gray-600 space-y-1">
-        <p><span className="font-semibold text-gray-900">{noteDates.length}</span> dates with notes</p>
-        <p><span className="font-semibold text-gray-900">{notes.length}</span> total notes</p>
+      {/* Days grid */}
+      <div className="grid grid-cols-7 gap-y-1">
+        {days.map((day, i) => {
+          if (!day) return <div key={`empty-${i}`} />
+          const dateStr = `${currentMonth.getFullYear()}-${String(currentMonth.getMonth() + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`
+          const hasNote = noteDates.includes(dateStr)
+          const isSelected = selectedDate && new Date(selectedDate).toISOString().split('T')[0] === dateStr
+          const isToday = today.toISOString().split('T')[0] === dateStr
+          return (
+            <button
+              key={day}
+              onClick={() => handleDayClick(day)}
+              disabled={!hasNote}
+              className={`mx-auto flex items-center justify-center rounded-full transition-colors
+                ${isSelected ? 'bg-gray-900 text-white' : ''}
+                ${hasNote && !isSelected ? 'bg-blue-100 text-blue-700 font-semibold hover:bg-blue-200' : ''}
+                ${!hasNote ? 'text-gray-300 cursor-default' : ''}
+                ${isToday && !isSelected ? 'ring-1 ring-blue-400' : ''}
+              `}
+              style={{width:'28px', height:'28px', fontSize:'11px'}}
+            >
+              {day}
+            </button>
+          )
+        })}
       </div>
     </div>
   )
