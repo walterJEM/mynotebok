@@ -20,6 +20,25 @@ export default function Dashboard() {
   const [sortBy, setSortBy] = useState<SortOption>('recent')
   const [user, setUser] = useState<any>(null)
 
+  const [showInstallBanner, setShowInstallBanner] = useState(false)
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
+
+  useEffect(() => {
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault()
+      setDeferredPrompt(e)
+      setShowInstallBanner(true)
+    })
+  }, [])
+
+  async function handleInstall() {
+    if (!deferredPrompt) return
+    deferredPrompt.prompt()
+    const { outcome } = await deferredPrompt.userChoice
+    if (outcome === 'accepted') setShowInstallBanner(false)
+    setDeferredPrompt(null)
+  }  
+
   const supabase = createClient()
 
   useEffect(() => {
@@ -110,6 +129,34 @@ export default function Dashboard() {
         <h1 className="text-2xl font-semibold text-gray-900">MyNoteBook</h1>
         <CaptureFlow onNoteCaptured={addNote} />
       </header>
+
+      {/* Banner de instalación */}
+      {showInstallBanner && (
+        <div className="flex items-center justify-between px-4 py-3 bg-blue-900 text-white">
+          <div className="flex items-center gap-3">
+            <img src="/icon-192.png" className="w-8 h-8 rounded-lg" />
+            <div>
+              <p className="text-sm font-medium">Instala MyNoteBook</p>
+              <p className="text-xs text-blue-200">Accede más rápido desde tu celular</p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setShowInstallBanner(false)}
+              className="text-xs text-blue-300 hover:text-white px-2 py-1"
+            >
+              Ahora no
+            </button>
+            <button
+              onClick={handleInstall}
+              className="text-xs bg-white text-blue-900 font-semibold px-3 py-1.5 rounded-lg hover:bg-blue-50"
+            >
+              Instalar
+            </button>
+          </div>
+        </div>
+      )}
+
 
       {/* Solo mostrar filtros en modo gallery y list */}
       {viewMode !== 'calendar' && (
