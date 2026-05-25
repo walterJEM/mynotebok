@@ -24,6 +24,13 @@ export default function Dashboard() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
 
   useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    getUser()
+    loadAllNotes()
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault()
       setDeferredPrompt(e)
@@ -41,14 +48,7 @@ export default function Dashboard() {
 
   const supabase = createClient()
 
-  useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-    }
-    getUser()
-    loadAllNotes()
-  }, [])
+ 
 
   async function loadAllNotes() {
     setLoading(true)
