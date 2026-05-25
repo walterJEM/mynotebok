@@ -1,38 +1,30 @@
-import { put } from '@vercel/blob'
 import { type NextRequest, NextResponse } from 'next/server'
+import { head } from '@vercel/blob'
 import { createClient } from '@/lib/supabase/server'
 
-export async function POST(request: NextRequest) {
+export async function GET(request: NextRequest) {
   try {
-    // Verify user is authenticated
     const supabase = await createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const formData = await request.formData()
-    const file = formData.get('file') as File
-
-    if (!file) {
-      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+    const pathname = request.nextUrl.searchParams.get('pathname')
+    if (!pathname) {
+      return NextResponse.json({ error: 'Missing pathname' }, { status: 400 })
     }
 
-    // Generate a unique filename with user_id prefix for organization
-    const timestamp = Date.now()
-    const filename = `notes/${user.id}/${timestamp}-${file.name}`
+    if (!pathname.includes(user.id)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
 
-    // Upload to Vercel Blob (private storage)
-    const blob = await put(filename, file, {
-      access: 'private',
-    })
+    const { downloadUrl } = await head(pathname)
 
-    return NextResponse.json({ pathname: blob.pathname, url: blob.url })
+    return NextResponse.redirect(downloadUrl)
   } catch (error) {
-    console.error('Upload error:', error)
-    return NextResponse.json({ error: 'Upload failed' }, { status: 500 })
+    console.error('Error serving file:', error)
+    return NextResponse.json({ error: String(error) }, { status: 500 })
   }
 }
