@@ -4,9 +4,10 @@
   "description": "Tu cuaderno digital para organizar notas",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#111111",
+  "background_color": "#ffffff",
   "theme_color": "#0d47a1",
   "orientation": "portrait",
+  "splash_pages": null,
   "icons": [
     {
       "src": "/icon-192.png",
@@ -16,7 +17,8 @@
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
