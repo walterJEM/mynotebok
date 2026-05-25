@@ -31,7 +31,8 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
           facingMode: 'environment',
           width: { ideal: 4096 },
           height: { ideal: 4096 },
-          aspectRatio: { ideal: 1.7778 },        
+          aspectRatio: { ideal: 1.7778 },
+        },    
       })
       if (videoRef.current) videoRef.current.srcObject = stream
     } catch (error) {
