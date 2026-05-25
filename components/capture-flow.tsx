@@ -10,58 +10,19 @@ interface CaptureFlowProps {
 
 export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [step, setStep] = useState<'menu' | 'camera' | 'review'>('menu')
+  const [step, setStep] = useState<'menu' | 'review'>('menu')
   const [uploading, setUploading] = useState(false)
   const [capturedImage, setCapturedImage] = useState<string | null>(null)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [tagInput, setTagInput] = useState('')
   const [tags, setTags] = useState<string[]>([])
-  const videoRef = useRef<HTMLVideoElement>(null)
-  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const supabase = createClient()
 
-  async function startCamera() {
-    setStep('camera')
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: 'environment',
-          width: { ideal: 4096 },
-          height: { ideal: 4096 },
-          aspectRatio: { ideal: 1.7778 },        
-      })
-      if (videoRef.current) videoRef.current.srcObject = stream
-    } catch (error) {
-      alert('No se pudo acceder a la cámara.')
-      setStep('menu')
-    }
-  }
-
-  function stopCamera() {
-    if (videoRef.current?.srcObject) {
-      const tracks = (videoRef.current.srcObject as MediaStream).getTracks()
-      tracks.forEach(track => track.stop())
-    }
-  }
-
-  async function capturePhoto() {
-    if (!videoRef.current || !canvasRef.current) return
-    const context = canvasRef.current.getContext('2d')
-    if (!context) return
-    canvasRef.current.width = videoRef.current.videoWidth
-    canvasRef.current.height = videoRef.current.videoHeight
-    context.drawImage(videoRef.current, 0, 0)
-    const imageData = canvasRef.current.toDataURL('image/jpeg', 1.0)
-    setCapturedImage(imageData)
-    stopCamera()
-    setTitle(new Date().toLocaleDateString('es'))
-    setStep('review')
-  }
-
-  function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  function handleImageSelected(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]
     if (!file) return
     const reader = new FileReader()
@@ -158,51 +119,48 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
                   </button>
                 </div>
                 <div className="space-y-3">
+                  {/* Cámara nativa del celular */}
                   <button
-                    onClick={startCamera}
+                    onClick={() => cameraInputRef.current?.click()}
                     className="w-full flex items-center justify-center gap-3 px-4 py-4 bg-gray-900 text-white rounded-xl hover:bg-gray-800 transition-colors font-medium"
                   >
                     <Camera size={22} />
                     Tomar foto
                   </button>
+
+                  {/* Subir desde galería */}
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     className="w-full flex items-center justify-center gap-3 px-4 py-4 border border-gray-300 rounded-xl hover:bg-gray-50 transition-colors font-medium"
                   >
                     <Upload size={22} />
-                    Subir foto
+                    Subir desde galería
                   </button>
                 </div>
-                <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileUpload} className="hidden" />
-              </div>
-            )}
 
-            {/* CAMERA */}
-            {step === 'camera' && (
-              <div className="p-4">
-                <video ref={videoRef} autoPlay playsInline className="w-full rounded-xl bg-black" />
-                <canvas ref={canvasRef} className="hidden" />
-                <div className="flex gap-3 mt-4">
-                  <button
-                    onClick={() => { stopCamera(); setStep('menu') }}
-                    className="flex-1 px-4 py-3 border border-gray-300 rounded-xl hover:bg-gray-50 font-medium"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    onClick={capturePhoto}
-                    className="flex-1 px-4 py-3 bg-gray-900 text-white rounded-xl hover:bg-gray-800 font-medium"
-                  >
-                    Capturar
-                  </button>
-                </div>
+                {/* Input cámara nativa */}
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleImageSelected}
+                  className="hidden"
+                />
+                {/* Input galería */}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageSelected}
+                  className="hidden"
+                />
               </div>
             )}
 
             {/* REVIEW + FORM */}
             {step === 'review' && capturedImage && (
               <div className="flex flex-col max-h-[85vh]">
-                {/* Header */}
                 <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">
                   <h2 className="text-lg font-semibold">Guardar nota</h2>
                   <button onClick={resetFlow} className="text-gray-500 hover:text-gray-700">
@@ -211,10 +169,8 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
                 </div>
 
                 <div className="overflow-auto p-5 space-y-4">
-                  {/* Imagen preview */}
                   <img src={capturedImage} alt="Preview" className="w-full rounded-xl object-cover max-h-48" />
 
-                  {/* Título */}
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-1 block">Título</label>
                     <input
@@ -226,7 +182,6 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
                     />
                   </div>
 
-                  {/* Descripción */}
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-1 block">Descripción</label>
                     <textarea
@@ -238,7 +193,6 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
                     />
                   </div>
 
-                  {/* Tags */}
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-1 block">Tags</label>
                     <div className="flex gap-2">
@@ -250,10 +204,7 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
                         placeholder="Ej: matemáticas"
                         className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-gray-500"
                       />
-                      <button
-                        onClick={addTag}
-                        className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                      >
+                      <button onClick={addTag} className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
                         <Plus size={18} />
                       </button>
                     </div>
@@ -272,7 +223,6 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
                   </div>
                 </div>
 
-                {/* Botones */}
                 <div className="flex gap-3 px-5 py-4 border-t border-gray-200">
                   <button
                     onClick={resetFlow}
