@@ -27,7 +27,11 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
     setStep('camera')
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
+        video: {
+          facingMode: 'environment',
+          width: { ideal: 4096 },
+          height: { ideal: 4096 },
+          aspectRatio: { ideal: 1.7778 },        
       })
       if (videoRef.current) videoRef.current.srcObject = stream
     } catch (error) {
@@ -50,7 +54,7 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
     canvasRef.current.width = videoRef.current.videoWidth
     canvasRef.current.height = videoRef.current.videoHeight
     context.drawImage(videoRef.current, 0, 0)
-    const imageData = canvasRef.current.toDataURL('image/jpeg', 0.8)
+    const imageData = canvasRef.current.toDataURL('image/jpeg', 1.0)
     setCapturedImage(imageData)
     stopCamera()
     setTitle(new Date().toLocaleDateString('es'))
