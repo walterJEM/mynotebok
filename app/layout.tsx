@@ -40,8 +40,7 @@ export default function RootLayout({
       <body className="font-sans antialiased bg-white text-gray-900">
         <SwRegister />
         {children}
-        {process.env.NODE_ENV === 'production' && <Analytics />}
-        <SwRegister />
+        {process.env.NODE_ENV === 'production' && <Analytics />}        
       </body>
     </html>
   )
