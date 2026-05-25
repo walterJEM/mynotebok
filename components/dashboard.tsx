@@ -123,25 +123,7 @@ export default function Dashboard() {
     return result
   }, [allNotes, selectedDate, searchQuery, selectedTags, sortBy])
 
-  if (loading && allNotes.length === 0) {
-    return (
-      <div className="flex flex-col h-screen bg-white items-center justify-center gap-4">
-        <img src="/icon-192.png" alt="MyNoteBook" className="w-16 h-16 rounded-2xl animate-pulse" />
-        <div className="w-48 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-          <div className="h-full bg-gray-900 rounded-full animate-[loading_1.5s_ease-in-out_infinite]" 
-              style={{animation: 'slideRight 1.5s ease-in-out infinite'}} />
-        </div>
-        <p className="text-sm text-gray-400">Cargando tus notas...</p>
-        <style>{`
-          @keyframes slideRight {
-            0% { width: 0%; margin-left: 0%; }
-            50% { width: 70%; margin-left: 15%; }
-            100% { width: 0%; margin-left: 100%; }
-          }
-        `}</style>
-      </div>
-    )
-  }  
+  
   
 
   return (
