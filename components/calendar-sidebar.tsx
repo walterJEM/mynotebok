@@ -51,15 +51,9 @@ export default function CalendarSidebar({
   }
 
   function getImageUrl(note: any) {
-    // Si es una URL completa de Vercel Blob, úsala directo
-    if (note.image_url.startsWith('https://')) {
-      return note.image_url
-    }
-    // Si es pathname, construye la URL pública de blob
-    if (note.image_url.startsWith('notes/')) {
-      return `https://public.blob.vercel-storage.com/${note.image_url}`
-    }
-    return `/api/file?pathname=${encodeURIComponent(note.image_url)}`
+    return note.image_url.startsWith('/')
+      ? note.image_url
+      : `/api/file?pathname=${encodeURIComponent(note.image_url)}`
   }
 
   return (

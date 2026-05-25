@@ -93,7 +93,7 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
 
       const uploadRes = await fetch('/api/upload', { method: 'POST', body: formData })
       if (!uploadRes.ok) throw new Error('Upload failed')
-      const { pathname, url } = await uploadRes.json()
+      const { pathname } = await uploadRes.json()
 
       const { data: note, error: dbError } = await supabase
         .from('notes')
@@ -101,7 +101,7 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
           user_id: user.id,
           title: title || new Date().toLocaleDateString('es'),
           description,
-          image_url: url,
+          image_url: pathname,
           image_path: pathname,
           captured_at: new Date().toISOString(),
           tags,
