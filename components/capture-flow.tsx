@@ -323,6 +323,7 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
                       </div>
                     )}
                   </div>
+                </div>
 
                 {/* Botones */}
                 <div className="flex gap-3 px-5 py-4 border-t border-gray-200">
