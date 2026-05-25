@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef,useEffect } from 'react'
 import { Camera, X, Upload, Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+
 
 interface CaptureFlowProps {
   onNoteCaptured: (note: any) => void
@@ -20,8 +21,24 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-
+  const [allTags, setAllTags] = useState<string[]>([])
   const supabase = createClient()
+
+  useEffect(() => {
+    async function fetchTags() {
+      const { data } = await supabase.from('notes').select('tags')
+      if (data) {
+        const tags = new Set<string>()
+        data.forEach(note => note.tags?.forEach((t: string) => tags.add(t)))
+        setAllTags(Array.from(tags).sort())
+      }
+    }
+    fetchTags()
+  }, [])  
+ 
+  
+
+  
 
   async function startCamera() {
     setStep('camera')
@@ -210,6 +227,7 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
                     <X size={22} />
                   </button>
                 </div>
+               
 
                 <div className="overflow-auto p-5 space-y-4">
                   {/* Imagen preview */}
@@ -242,7 +260,7 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
                   {/* Tags */}
                   <div>
                     <label className="text-sm font-medium text-gray-700 mb-1 block">Tags</label>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 relative">
                       <input
                         type="text"
                         value={tagInput}
@@ -251,13 +269,47 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
                         placeholder="Ej: matemáticas"
                         className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm outline-none focus:border-gray-500"
                       />
-                      <button
-                        onClick={addTag}
-                        className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
-                      >
+                      <button onClick={addTag} className="px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
                         <Plus size={18} />
                       </button>
                     </div>
+
+                    {/* Sugerencias de tags existentes */}
+                    {tagInput && allTags.filter(t => 
+                      t.includes(tagInput.toLowerCase()) && !tags.includes(t)
+                    ).length > 0 && (
+                      <div className="border border-gray-200 rounded-lg mt-1 overflow-hidden shadow-sm">
+                        {allTags
+                          .filter(t => t.includes(tagInput.toLowerCase()) && !tags.includes(t))
+                          .slice(0, 5)
+                          .map(t => (
+                            <button
+                              key={t}
+                              onClick={() => { setTags([...tags, t]); setTagInput('') }}
+                              className="w-full text-left px-3 py-2 text-sm hover:bg-gray-50 border-b border-gray-100 last:border-0"
+                            >
+                              {t}
+                            </button>
+                          ))}
+                      </div>
+                    )}
+
+                    {/* Tags populares cuando no hay texto */}
+                    {!tagInput && allTags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        <span className="text-xs text-gray-400">Recientes:</span>
+                        {allTags.slice(0, 6).filter(t => !tags.includes(t)).map(t => (
+                          <button
+                            key={t}
+                            onClick={() => setTags([...tags, t])}
+                            className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded-full hover:bg-gray-200"
+                          >
+                            + {t}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
                     {tags.length > 0 && (
                       <div className="flex flex-wrap gap-2 mt-2">
                         {tags.map(tag => (
@@ -271,7 +323,6 @@ export default function CaptureFlow({ onNoteCaptured }: CaptureFlowProps) {
                       </div>
                     )}
                   </div>
-                </div>
 
                 {/* Botones */}
                 <div className="flex gap-3 px-5 py-4 border-t border-gray-200">
