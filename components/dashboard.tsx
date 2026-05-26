@@ -26,6 +26,14 @@ export default function Dashboard() {
   const supabase = createClient()
 
   useEffect(() => {
+    loadAllNotes()
+    
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+    }
+    getUser()
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault()
       setDeferredPrompt(e)
@@ -116,7 +124,7 @@ export default function Dashboard() {
         <h1 className="text-2xl font-semibold text-gray-900">MyNoteBook</h1>
         <CaptureFlow onNoteCaptured={addNote} />
       </header>
-      
+
       {/* Banner de instalación */}
       {showInstallBanner && (
         <div className="flex items-center justify-between px-4 py-3 bg-blue-900 text-white">
