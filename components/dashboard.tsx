@@ -19,26 +19,18 @@ export default function Dashboard() {
   const [selectedTags, setSelectedTags] = useState<string[]>([])
   const [sortBy, setSortBy] = useState<SortOption>('recent')
   const [user, setUser] = useState<any>(null)
+
   const [showInstallBanner, setShowInstallBanner] = useState(false)
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null)
 
   const supabase = createClient()
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-    }
-    getUser()
-    loadAllNotes()
-
-    const handler = (e: any) => {
+    window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault()
       setDeferredPrompt(e)
       setShowInstallBanner(true)
-    }
-    window.addEventListener('beforeinstallprompt', handler)
-    return () => window.removeEventListener('beforeinstallprompt', handler)
+    })
   }, [])
 
   async function handleInstall() {
@@ -124,7 +116,8 @@ export default function Dashboard() {
         <h1 className="text-2xl font-semibold text-gray-900">MyNoteBook</h1>
         <CaptureFlow onNoteCaptured={addNote} />
       </header>
-
+      
+      {/* Banner de instalación */}
       {showInstallBanner && (
         <div className="flex items-center justify-between px-4 py-3 bg-blue-900 text-white">
           <div className="flex items-center gap-3">
