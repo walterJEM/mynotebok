@@ -2,13 +2,7 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import Link from 'next/link'
@@ -28,7 +22,6 @@ export default function Page() {
     const supabase = createClient()
     setIsLoading(true)
     setError(null)
-
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -40,9 +33,9 @@ export default function Page() {
         },
       })
       if (error) throw error
-      router.push('/')
+      router.push('/app')
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'An error occurred')
+      setError(error instanceof Error ? error.message : 'Error al iniciar sesión')
     } finally {
       setIsLoading(false)
     }
@@ -52,7 +45,6 @@ export default function Page() {
     const supabase = createClient()
     setIsGoogleLoading(true)
     setError(null)
-
     try {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
@@ -64,7 +56,7 @@ export default function Page() {
       })
       if (error) throw error
     } catch (error: unknown) {
-      setError(error instanceof Error ? error.message : 'An error occurred')
+      setError(error instanceof Error ? error.message : 'Error al iniciar sesión')
       setIsGoogleLoading(false)
     }
   }
@@ -73,29 +65,31 @@ export default function Page() {
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10 bg-white">
       <div className="w-full max-w-sm">
         <div className="flex flex-col gap-6">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <img src="/icon-192.png" className="w-10 h-10 rounded-xl" />
+            <span className="font-bold text-xl text-gray-900">MyNoteBook</span>
+          </div>
           <Card>
             <CardHeader>
-              <CardTitle className="text-2xl">Login to MyNoteBook</CardTitle>
-              <CardDescription>
-                Access your digital notebook
-              </CardDescription>
+              <CardTitle className="text-2xl">Iniciar sesión</CardTitle>
+              <CardDescription>Accede a tu cuaderno digital</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleLogin}>
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-4">
                   <div className="grid gap-2">
                     <Label htmlFor="email">Email</Label>
                     <Input
                       id="email"
                       type="email"
-                      placeholder="m@example.com"
+                      placeholder="tu@email.com"
                       required
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="password">Password</Label>
+                    <Label htmlFor="password">Contraseña</Label>
                     <Input
                       id="password"
                       type="password"
@@ -106,7 +100,7 @@ export default function Page() {
                   </div>
                   {error && <p className="text-sm text-red-500">{error}</p>}
                   <Button type="submit" className="w-full" disabled={isLoading}>
-                    {isLoading ? 'Logging in...' : 'Login'}
+                    {isLoading ? 'Iniciando sesión...' : 'Iniciar sesión'}
                   </Button>
 
                   <div className="relative">
@@ -114,7 +108,7 @@ export default function Page() {
                       <span className="w-full border-t border-gray-300" />
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="bg-white px-2 text-gray-500">Or continue with</span>
+                      <span className="bg-white px-2 text-gray-500">O continúa con</span>
                     </div>
                   </div>
 
@@ -125,21 +119,21 @@ export default function Page() {
                     onClick={handleGoogleSignIn}
                     disabled={isGoogleLoading}
                   >
-                    {isGoogleLoading ? 'Signing in...' : 'Google'}
+                    {isGoogleLoading ? 'Iniciando...' : 'Google'}
                   </Button>
                 </div>
                 <div className="mt-4 text-center text-sm">
-                  Don&apos;t have an account?{' '}
-                  <Link
-                    href="/auth/sign-up"
-                    className="underline underline-offset-4"
-                  >
-                    Sign up
+                  ¿No tienes cuenta?{' '}
+                  <Link href="/auth/sign-up" className="underline underline-offset-4">
+                    Regístrate
                   </Link>
                 </div>
               </form>
             </CardContent>
           </Card>
+          <p className="text-center text-xs text-gray-400">
+            <Link href="/" className="hover:text-gray-600">← Volver al inicio</Link>
+          </p>
         </div>
       </div>
     </div>
