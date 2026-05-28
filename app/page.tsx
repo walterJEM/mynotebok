@@ -91,47 +91,33 @@ export default function LandingPage() {
       </section>
 
       {/* Precios */}
+      {/* Gratis */}
       <section className="px-6 py-12 bg-gray-50">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Precios simples</h2>
-          <p className="text-gray-500 text-center mb-10 text-sm">Empieza gratis, paga cuando quieras más</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Plan gratis */}
-            <div className="bg-white border border-gray-200 rounded-2xl p-6">
-              <h3 className="font-bold text-gray-900 text-lg mb-1">Gratis</h3>
-              <div className="text-3xl font-bold text-gray-900 mb-4">$0</div>
-              <ul className="space-y-2 mb-6">
-                {['Hasta 30 fotos', 'Galería y lista', 'Búsqueda básica', 'Acceso desde celular'].map(f => (
-                  <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
-                    <span className="text-green-500">✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/auth/sign-up" className="block text-center border border-gray-300 text-gray-700 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-50">
-                Empezar gratis
-              </Link>
-            </div>
-
-            {/* Plan Pro */}
-            <div className="bg-gray-900 border border-gray-900 rounded-2xl p-6 relative">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 text-white text-xs px-3 py-1 rounded-full font-medium">
-                Popular
-              </div>
-              <h3 className="font-bold text-white text-lg mb-1">Pro</h3>
-              <div className="text-3xl font-bold text-white mb-1">$2.99<span className="text-lg font-normal text-gray-400">/mes</span></div>
-              <p className="text-xs text-gray-400 mb-4">o $19.99/año — ahorra 44%</p>
-              <ul className="space-y-2 mb-6">
-                {['Fotos ilimitadas', 'Calendario visual', 'Tags y etiquetas', 'Búsqueda avanzada', 'Exportar a PDF'].map(f => (
-                  <li key={f} className="flex items-center gap-2 text-sm text-gray-300">
-                    <span className="text-green-400">✓</span> {f}
-                  </li>
-                ))}
-              </ul>
-              <Link href="/auth/sign-up" className="block text-center bg-white text-gray-900 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-100">
-                Empezar Pro
-              </Link>
-            </div>
+        <div className="max-w-2xl mx-auto text-center">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">100% Gratis</h2>
+          <p className="text-gray-500 mb-8 text-sm">Sin planes, sin tarjeta, sin límites</p>
+          <div className="bg-white border border-gray-200 rounded-2xl p-8 max-w-sm mx-auto">
+            <div className="text-5xl font-bold text-gray-900 mb-2">$0</div>
+            <p className="text-gray-500 text-sm mb-6">Para siempre</p>
+            <ul className="space-y-3 mb-8 text-left">
+              {[
+                'Fotos ilimitadas',
+                'Calendario visual',
+                'Tags y etiquetas',
+                'Busqueda rapida',
+                'Acceso desde cualquier celular',
+                'Sin publicidad',
+              ].map(f => (
+                <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
+                  <span className="text-green-500 font-bold">✓</span> {f}
+                </li>
+              ))}
+            </ul>
+            <Link href="/auth/sign-up" className="block text-center bg-gray-900 text-white px-4 py-3 rounded-xl text-sm font-medium hover:bg-gray-800">
+              Empieza gratis ahora
+            </Link>
           </div>
+          <p className="text-xs text-gray-400 mt-4">Sin tarjeta de credito • Sin contratos</p>
         </div>
       </section>
 
