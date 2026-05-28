@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/client'
 import CaptureFlow from './capture-flow'
 import NoteGallery from './note-gallery'
 import Navigation from './navigation'
+import Tutorial from './tutorial'
 
 type ViewMode = 'gallery' | 'list' | 'calendar'
 type SortOption = 'recent' | 'oldest' | 'title'
@@ -124,6 +125,7 @@ export default function Dashboard() {
         <h1 className="text-2xl font-semibold text-gray-900">MyNoteBook</h1>
         <CaptureFlow onNoteCaptured={addNote} />
       </header>
+      <Tutorial />
 
       {/* Banner de instalación */}
       {showInstallBanner && (
