@@ -59,9 +59,9 @@ export default function NoteGallery({
     )
   }
 
-  {selectedNote && (
-    <NoteDetail note={selectedNote} onClose={() => setSelectedNote(null)} />
-  )}
+  if (selectedNote) {
+    return <NoteDetail note={selectedNote} onClose={() => setSelectedNote(null)} />
+  }
 
   return (
     <div className="flex flex-col h-full relative">
