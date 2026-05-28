@@ -203,7 +203,8 @@ export default function Dashboard() {
         </div>
       )}
 
-      <main className="flex-1 overflow-auto">
+      <main className="flex-1 overflow-auto">       
+       
         <NoteGallery
           notes={filteredNotes}
           allNotes={allNotes}
@@ -211,7 +212,8 @@ export default function Dashboard() {
           loading={loading}
           selectedDate={selectedDate}
           onDateSelected={setSelectedDate}
-        />
+          onNoteDeleted={loadAllNotes}
+        />        
       </main>
 
       <Navigation

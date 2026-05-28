@@ -16,9 +16,10 @@ interface NoteDetailProps {
     tags: string[]
   }
   onClose: () => void
+  onNoteDeleted?: () => void
 }
 
-export default function NoteDetail({ note, onClose }: NoteDetailProps) {
+export default function NoteDetail({ note, onClose, onNoteDeleted }: NoteDetailProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState(note.title)
   const [description, setDescription] = useState(note.description || '')
@@ -79,6 +80,7 @@ export default function NoteDetail({ note, onClose }: NoteDetailProps) {
       const { error } = await supabase.from('notes').delete().eq('id', note.id)
       if (error) throw error
       onClose()
+      onNoteDeleted?.()
     } catch (error) {
       alert('Error al eliminar la nota')
     } finally {

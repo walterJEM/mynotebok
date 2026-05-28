@@ -15,6 +15,7 @@ interface NoteGalleryProps {
   loading: boolean
   selectedDate: Date | null
   onDateSelected: (date: Date | null) => void
+  onNoteDeleted?: () => void
 }
 
 export default function NoteGallery({
@@ -24,6 +25,7 @@ export default function NoteGallery({
   loading,
   selectedDate,
   onDateSelected,
+  onNoteDeleted,
 }: NoteGalleryProps) {
   const [selectedNote, setSelectedNote] = useState<any | null>(null)
   const [popupNotes, setPopupNotes] = useState<any[] | null>(null)
@@ -60,7 +62,14 @@ export default function NoteGallery({
   }
 
   if (selectedNote) {
-    return <NoteDetail note={selectedNote} onClose={() => setSelectedNote(null)} />
+    return <NoteDetail 
+      note={selectedNote} 
+      onClose={() => setSelectedNote(null)}
+      onNoteDeleted={() => {
+        setSelectedNote(null)
+        onNoteDeleted?.()
+      }}
+    />
   }
 
   return (
