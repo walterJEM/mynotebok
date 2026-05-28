@@ -150,7 +150,7 @@ export default function LandingPage() {
           <img src="/icon-192.png" className="w-6 h-6 rounded-md" />
           <span className="font-medium text-gray-900 text-sm">MyNoteBook</span>
         </div>
-        <p className="text-xs text-gray-400">Hecho con ❤️ en Lima, Perú</p>
+        <p className="text-xs text-gray-400">Derechos Reservados WJEM, Perú-Lima</p>
       </footer>
 
     </div>
