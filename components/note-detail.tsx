@@ -17,9 +17,11 @@ interface NoteDetailProps {
   }
   onClose: () => void
   onNoteDeleted?: () => void
+  onNoteUpdated?: () => void
+
 }
 
-export default function NoteDetail({ note, onClose, onNoteDeleted }: NoteDetailProps) {
+export default function NoteDetail({ note, onClose, onNoteDeleted, onNoteUpdated }: NoteDetailProps) {
   const [isEditing, setIsEditing] = useState(false)
   const [title, setTitle] = useState(note.title)
   const [description, setDescription] = useState(note.description || '')
@@ -66,6 +68,7 @@ export default function NoteDetail({ note, onClose, onNoteDeleted }: NoteDetailP
         .eq('id', note.id)
       if (error) throw error
       setIsEditing(false)
+      onNoteUpdated?.()
     } catch (error) {
       alert('Error al guardar la nota')
     } finally {

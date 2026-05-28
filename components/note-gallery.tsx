@@ -69,6 +69,10 @@ export default function NoteGallery({
         setSelectedNote(null)
         onNoteDeleted?.()
       }}
+      onNoteUpdated={() => {
+        setSelectedNote(null)
+        onNoteDeleted?.()
+      }}
     />
   }
 
