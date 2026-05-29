@@ -1,5 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { head } from '@vercel/blob'
+import { getDownloadUrl } from '@vercel/blob'
 import { createClient } from '@/lib/supabase/server'
 
 export async function GET(request: NextRequest) {
@@ -20,10 +20,22 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const { downloadUrl } = await head(pathname)
-
-    return NextResponse.redirect(downloadUrl, {
+    const url = `https://${process.env.BLOB_READ_WRITE_TOKEN?.split('_')[3]}.public.blob.vercel-storage.com/${pathname}`
+    
+    const imageRes = await fetch(url, {
       headers: {
+        Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`,
+      },
+    })
+
+    if (!imageRes.ok) throw new Error('Failed to fetch image')
+
+    const buffer = await imageRes.arrayBuffer()
+    const contentType = imageRes.headers.get('content-type') || 'image/jpeg'
+
+    return new NextResponse(buffer, {
+      headers: {
+        'Content-Type': contentType,
         'Cache-Control': 'private, max-age=3600',
       },
     })
