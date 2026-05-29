@@ -50,7 +50,17 @@ export default async function Page() {
             Ya tengo cuenta
           </Link>
         </div>
+          <a
+            href="https://wa.me/51998429841?text=Hola!%20Quiero%20adquirir%20el%20cuaderno%20digital%20MyNoteBook%20%F0%9F%93%93"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-medium transition-colors mt-2"
+          >
+          📓 Adquiere tu cuaderno aquí
+          </a>
         <p className="text-xs text-gray-400 mt-4">Sin tarjeta de credito • Gratis para siempre</p>
+        
+        
       </section>
 
       {/* Como funciona */}
@@ -129,6 +139,14 @@ export default async function Page() {
         <Link href="/auth/sign-up" className="inline-block bg-gray-900 text-white px-8 py-3 rounded-xl font-medium hover:bg-gray-800 transition-colors">
           Empieza gratis ahora
         </Link>
+          <a
+              href="https://wa.me/51998429841?text=Hola!%20Quiero%20adquirir%20el%20cuaderno%20digital%20MyNoteBook%20%F0%9F%93%93"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-xl font-medium transition-colors mt-3"
+            >
+              📓 Adquiere tu cuaderno aquí
+          </a>
       </section>
 
       {/* Footer */}
