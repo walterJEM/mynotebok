@@ -1,11 +1,8 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { get } from '@vercel/blob'
 import { createClient } from '@/lib/supabase/server'
 
 export async function GET(request: NextRequest) {
   try {
-    console.log('BLOB TOKEN:', process.env.BLOB_READ_WRITE_TOKEN?.substring(0, 20))
-    
     const supabase = await createClient()
     const { data: { user } } = await supabase.auth.getUser()
 
@@ -22,11 +19,24 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const { contentType, stream } = await get(pathname)
+    const token = process.env.BLOB_READ_WRITE_TOKEN
+    if (!token) {
+      return NextResponse.json({ error: 'Missing token' }, { status: 500 })
+    }
 
-    return new NextResponse(stream, {
+    const { get } = await import('@vercel/blob')
+    const blob = await get(pathname, { token })
+
+    if (!blob) {
+      return NextResponse.json({ error: 'Blob not found' }, { status: 404 })
+    }
+
+    const imageRes = await fetch(blob.downloadUrl)
+    const buffer = await imageRes.arrayBuffer()
+
+    return new NextResponse(buffer, {
       headers: {
-        'Content-Type': contentType || 'image/jpeg',
+        'Content-Type': blob.contentType || 'image/jpeg',
         'Cache-Control': 'private, max-age=3600',
       },
     })
