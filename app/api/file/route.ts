@@ -1,5 +1,4 @@
 import { type NextRequest, NextResponse } from 'next/server'
-import { get } from '@vercel/blob'
 import { createClient } from '@/lib/supabase/server'
 
 export async function GET(request: NextRequest) {
@@ -20,11 +19,26 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    const { contentType, stream } = await get(pathname)
+    const token = process.env.BLOB_READ_WRITE_TOKEN
+    const storeId = token?.split('_')[3]
+    const blobUrl = `https://${storeId}.public.blob.vercel-storage.com/${pathname}`
 
-    return new NextResponse(stream, {
+    const imageRes = await fetch(blobUrl, {
       headers: {
-        'Content-Type': contentType || 'image/jpeg',
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (!imageRes.ok) {
+      return NextResponse.json({ error: `Blob fetch failed: ${imageRes.status}` }, { status: imageRes.status })
+    }
+
+    const buffer = await imageRes.arrayBuffer()
+    const contentType = imageRes.headers.get('content-type') || 'image/jpeg'
+
+    return new NextResponse(buffer, {
+      headers: {
+        'Content-Type': contentType,
         'Cache-Control': 'private, max-age=3600',
       },
     })
