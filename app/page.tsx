@@ -1,7 +1,16 @@
+import { redirect } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
 import Link from 'next/link'
 import { Camera, Calendar, Tag, Search, BookOpen, Star } from 'lucide-react'
 
-export default function LandingPage() {
+export default async function Page() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (user) {
+    redirect('/app')
+  }
+
   return (
     <div className="min-h-screen bg-white">
 
@@ -13,7 +22,7 @@ export default function LandingPage() {
         </div>
         <div className="flex gap-3">
           <Link href="/auth/login" className="text-sm text-gray-600 hover:text-gray-900 px-3 py-2">
-            Iniciar sesión
+            Iniciar sesion
           </Link>
           <Link href="/auth/sign-up" className="text-sm bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800">
             Empieza gratis
@@ -41,10 +50,10 @@ export default function LandingPage() {
             Ya tengo cuenta
           </Link>
         </div>
-        <p className="text-xs text-gray-400 mt-4">Sin tarjeta de crédito • Gratis para siempre</p>
+        <p className="text-xs text-gray-400 mt-4">Sin tarjeta de credito • Gratis para siempre</p>
       </section>
 
-      {/* Cómo funciona */}
+      {/* Como funciona */}
       <section className="px-6 py-12 bg-gray-50">
         <div className="max-w-2xl mx-auto">
           <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">Así de fácil</h2>
@@ -67,7 +76,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Características */}
+      {/* Caracteristicas */}
       <section className="px-6 py-12 max-w-2xl mx-auto">
         <h2 className="text-2xl font-bold text-gray-900 text-center mb-10">Todo lo que necesitas</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -90,7 +99,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* Precios */}
       {/* Gratis */}
       <section className="px-6 py-12 bg-gray-50">
         <div className="max-w-2xl mx-auto text-center">
@@ -100,14 +108,7 @@ export default function LandingPage() {
             <div className="text-5xl font-bold text-gray-900 mb-2">$0</div>
             <p className="text-gray-500 text-sm mb-6">Para siempre</p>
             <ul className="space-y-3 mb-8 text-left">
-              {[
-                'Fotos ilimitadas',
-                'Calendario visual',
-                'Tags y etiquetas',
-                'Busqueda rapida',
-                'Acceso desde cualquier celular',
-                'Sin publicidad',
-              ].map(f => (
+              {['Fotos ilimitadas', 'Calendario visual', 'Tags y etiquetas', 'Busqueda rapida', 'Acceso desde cualquier celular', 'Sin publicidad'].map(f => (
                 <li key={f} className="flex items-center gap-2 text-sm text-gray-600">
                   <span className="text-green-500 font-bold">✓</span> {f}
                 </li>
@@ -136,7 +137,7 @@ export default function LandingPage() {
           <img src="/icon-192.png" className="w-6 h-6 rounded-md" />
           <span className="font-medium text-gray-900 text-sm">MyNoteBook</span>
         </div>
-        <p className="text-xs text-gray-400">Derechos Reservados WJEM, Perú-Lima</p>
+        <p className="text-xs text-gray-400">Derechos Reservados WJEM, Peru-Lima</p>
       </footer>
 
     </div>
