@@ -20,23 +20,25 @@ export async function GET(request: NextRequest) {
     }
 
     const token = process.env.BLOB_READ_WRITE_TOKEN
-    if (!token) {
-      return NextResponse.json({ error: 'Missing token' }, { status: 500 })
+    const storeId = 'q4iszijeqgansnup'
+    const blobUrl = `https://${storeId}.public.blob.vercel-storage.com/${pathname}`
+
+    const imageRes = await fetch(blobUrl, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+
+    if (!imageRes.ok) {
+      return NextResponse.json({ error: `Failed: ${imageRes.status}` }, { status: imageRes.status })
     }
 
-    const { get } = await import('@vercel/blob')
-    const blob = await get(pathname, { token })
-
-    if (!blob) {
-      return NextResponse.json({ error: 'Blob not found' }, { status: 404 })
-    }
-
-    const imageRes = await fetch(blob.downloadUrl)
     const buffer = await imageRes.arrayBuffer()
+    const contentType = imageRes.headers.get('content-type') || 'image/jpeg'
 
     return new NextResponse(buffer, {
       headers: {
-        'Content-Type': blob.contentType || 'image/jpeg',
+        'Content-Type': contentType,
         'Cache-Control': 'private, max-age=3600',
       },
     })
