@@ -15,16 +15,16 @@ export default async function Page() {
     <div className="min-h-screen bg-white">
 
       {/* Navbar */}
-      <nav className="flex items-center justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
+      <nav className="flex items-center justify-between px-4 py-3 border-b border-gray-100 sticky top-0 bg-white z-10">
         <div className="flex items-center gap-2">
           <img src="/icon-192.png" className="w-8 h-8 rounded-lg" />
-          <span className="font-semibold text-gray-900">MyNoteBook</span>
+          <span className="font-semibold text-gray-900 text-sm sm:text-base">MyNoteBook</span>
         </div>
-        <div className="flex gap-3">
-          <Link href="/auth/login" className="text-sm text-gray-600 hover:text-gray-900 px-3 py-2">
-            Iniciar sesion
+        <div className="flex gap-2">
+          <Link href="/auth/login" className="text-xs sm:text-sm text-gray-600 hover:text-gray-900 px-2 sm:px-3 py-2 whitespace-nowrap">
+            Iniciar sesión
           </Link>
-          <Link href="/auth/sign-up" className="text-sm bg-gray-900 text-white px-4 py-2 rounded-lg hover:bg-gray-800">
+          <Link href="/auth/sign-up" className="text-xs sm:text-sm bg-gray-900 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-gray-800 whitespace-nowrap">
             Empieza gratis
           </Link>
         </div>
